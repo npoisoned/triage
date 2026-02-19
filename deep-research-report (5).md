@@ -27,7 +27,7 @@
 | **JDBC connection**              | Конфиг/среда           | `JDBC_URL=jdbc:postgresql://db:5432/app` (без пароля) |
 | **Generic API key**              | API-ключ               | `API_KEY=<замаскировано>`              |
 | **Consumer key (+ secret)**      | API-ключ + Secret      | `CONSUMER_KEY=<замаскировано>`         |
-| **AWS/GCP access keys**          | Инфраструктурный ключ  | `AWS_ACCESS_KEY_ID=AKIA<замаскировано>` / `GCP_API_KEY=AIza<замаскировано>`【18†L3-L10】 |
+| **AWS/GCP access keys**          | Инфраструктурный ключ  | `AWS_ACCESS_KEY_ID=AKIA<замаскировано>` / `GCP_API_KEY=AIza<замаскировано>` |
 | **CI token**                     | Токен CI/CD            | `CI_TOKEN=<замаскировано>`             |
 
 **Замечание:** для каждого типа ниже описаны правила хранения, примеры (фейковые) и команды проверки/ротации.
@@ -94,13 +94,13 @@ E -- stage/dev/local --> HR[High/Medium: удалить + ротация по р
   ```bash
   openssl pkey -in key.pem -check -noout
   ```
-  ([ман стр. openssl-pkey](https://www.mankier.com/1/openssl-pkey.1ossl)). Ротация: перевыпустить ключ/сертификат, обновить приложение.
+   Ротация: перевыпустить ключ/сертификат, обновить приложение.
 
 - **PKCS#12 (.p12)**: хранить вне Git, отдавать на runtime из CI/Vault. Проверка:
   ```bash
   openssl pkcs12 -in keystore.p12 -info -nokeys
   ```
-  ([ман стр. openssl-pkcs12](https://www.mankier.com/1/openssl-pkcs12.1ossl)). Ротация: перевыпустить контейнер, обновить хранилище.
+   Ротация: перевыпустить контейнер, обновить хранилище.
 
 - **JWT**: не хранить. Генерировать динамически (login flow). Если JWT утёк: перевыпустить signing key или инвалидировать сессии.
 
@@ -108,7 +108,7 @@ E -- stage/dev/local --> HR[High/Medium: удалить + ротация по р
   ```bash
   vault token revoke <TOKEN>
   ```
-  ([Vault docs](https://developer.hashicorp.com/vault/docs/commands/token/revoke)). Проверка: `vault kv metadata get -mount=secret <path>` покажет дату/версию.
+  Проверка: `vault kv metadata get -mount=secret <path>` покажет дату/версию.
 
 - **K8s SA token**: **короткоживущий** с TokenRequest. Проверка:
   ```bash
@@ -116,7 +116,7 @@ E -- stage/dev/local --> HR[High/Medium: удалить + ротация по р
   kubectl auth can-i create pods -n <ns> --as=system:serviceaccount:<ns>:<sa>
   kubectl -n <ns> create token <sa> --duration=10m
   ```
-  ([k8s docs](https://kubernetes.io/docs/concepts/security/service-accounts)). Инвалидация: для legacy-secret — `kubectl -n <ns> delete secret <sa-token-secret>`. Для short-lived: удалить/пересоздать SA:
+  Инвалидация: для legacy-secret — `kubectl -n <ns> delete secret <sa-token-secret>`. Для short-lived: удалить/пересоздать SA:
   ```bash
   kubectl -n <ns> delete sa <sa>
   kubectl -n <ns> create sa <sa>
@@ -129,7 +129,7 @@ E -- stage/dev/local --> HR[High/Medium: удалить + ротация по р
 
 - **Generic API key / consumer_key**: хранить в секрет-хранилище. Ротация: перевыпустить, ограничить привязки (IP/реферер).
 
-- **AWS/GCP ключи**: использовать временные креды через STS. При утечке — немедленно деактивировать ключ и создать новый (см. [AWS](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html), [GCP](https://cloud.google.com/docs/authentication/api-keys-best-practices)).
+- **AWS/GCP ключи**: использовать временные креды через STS. При утечке — немедленно деактивировать ключ и создать новый 
 
 - **CI tokens**: хранить в CI как secret var. Ротация: перевыпустить, обновить пайплайны.
 
