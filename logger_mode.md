@@ -226,7 +226,7 @@ secrets/
 
 ## Автоматизация и инструменты
 
-- **Gitleaks** для pre-commit и CI. ([gitleaks](https://github.com/gitleaks/gitleaks) repo).  
+- **Gitleaks** для pre-commit и CI.   
 - **Pre-commit**: добавим хук:
   ```yaml
   repos:
@@ -239,7 +239,7 @@ secrets/
   ```bash
   gitleaks git --redact --log-opts="--all"
   ```
-- **Allowlist:** только для подтверждённых FP или уже ротированных значений【4†L13-L20】. Пример `.gitleaks.toml`:
+- **Allowlist:** только для подтверждённых FP или уже ротированных значений. Пример `.gitleaks.toml`:
   ```toml
   [allowlist]
   regexes = ['YOUR_API_KEY_HERE','(?i)example[_-]?token']
